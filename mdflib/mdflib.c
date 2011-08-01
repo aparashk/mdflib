@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "mdflib.h"
 
 static const char              IDBLOCK_01__FileIdentifier[8]                  = "MDF     ";
 static const char              IDBLOCK_02__FormatIdentifier[8]                = "3.30    ";
@@ -40,7 +41,7 @@ static const unsigned int      DGBLOCK_09__Reserved                           = 
 
 static size_t count = 0;
 
-FILE *mdf_open(const char *filename);
+FILE *mdf_open(const char *filename, struct SExtVariable *table, struct SExtVariableA *tableA);
 
 static void set_Infos(void){
 #if 0
@@ -122,7 +123,7 @@ static void write__DGBLOCK(FILE *fp, size_t *count){
     *count += fwrite(&DGBLOCK_09__Reserved,                             sizeof(DGBLOCK_09__Reserved),                   1, fp);
 } /* write__DGBLOCK */
 
-FILE *mdf_open(const char *filename)
+FILE *mdf_open(const char *filename, struct SExtVariable *table, struct SExtVariableA *tableA)
 {
    FILE *fp = NULL;
    fp = fopen(filename, "wb");
@@ -135,6 +136,12 @@ FILE *mdf_open(const char *filename)
    write__IDBLOCK(fp, &count);
    write__HDBLOCK(fp, &count);
    write__DGBLOCK(fp, &count);
+
+   if(table != NULL){
+   }
+
+   if(tableA != NULL){
+   }
 
    return fp;
 }
