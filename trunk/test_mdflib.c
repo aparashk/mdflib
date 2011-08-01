@@ -43,14 +43,43 @@ void test_func1(void)
 {
    FILE *file;
 
-   file = mdf_open("test_func1.mdf");
+   file = mdf_open("test_func1.mdf", NULL, NULL);
    CU_ASSERT_PTR_NOT_EQUAL_FATAL(NULL, file);
    fclose(file);
    CU_ASSERT_EQUAL(0, binary_fcompare("test_func1.mdf", "test_func1_requested.mdf"));
 }
 
+char A_CHAR;
+struct SExtVariable test_func2__Array[] =
+{
+  #if 0
+  {"name", &GLOBAL_VAR, DEF_type, VARP_IODIR, "group", "unit_or_valueIdentifier", "comment", lsb, offset, init_value},
+  #endif /* 0 */
+  {"A_CHAR", &A_CHAR, DEF_signed_char, VARP_INPUT, "group", "unit_or_valueIdentifier", "comment", 0.01, 0.0, 0.0},
+  VAR_ARRAYEND
+};
+
+void test_func2(void)
+{
+   FILE *file;
+
+   file = mdf_open("test_func2.mdf", test_func2__Array, NULL);
+   CU_ASSERT_PTR_NOT_EQUAL_FATAL(NULL, file);
+   fclose(file);
+   CU_ASSERT_EQUAL(0, binary_fcompare("test_func2.mdf", "test_func2_requested.mdf"));
+}
+
+struct SExtVariableA test_funcx__ArrayArrayArray[] =
+{
+  #if 0
+  {"name", &GLOBAL_VAR, DEF_type, ArrayLength, VARP_IODIR, "group", "unit_or_valueIdentifier", "comment", lsb, offset, init_value},
+  #endif /* 0 */
+  VAR_ARRAYEND
+};
+
 CU_TestInfo test_array1[] = {
   { "testname1", test_func1 },
+  { "testname2", test_func2 },
   CU_TEST_INFO_NULL,
 };
 
