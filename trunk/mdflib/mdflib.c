@@ -1,11 +1,8 @@
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
 #include <stdio.h>
 
 static const char              IDBLOCK_01__FileIdentifier[8]                  = "MDF     ";
 static const char              IDBLOCK_02__FormatIdentifier[8]                = "3.30    ";
-static const char              IDBLOCK_03__ProgramIdentifier[8]               = "mdflib  ";
+static const char              IDBLOCK_03__ProgramIdentifier[8]               = "CUNIT2.3";
 static const unsigned short    IDBLOCK_04__DefaultByteOrder                   = 0u;     /* Little Endian */
 static const unsigned short    IDBLOCK_05__DefaultFloatingPointFormat         = 0u;     /* Compliant with IEEE 754 standard */
 static const unsigned short    IDBLOCK_06__VersionNumber                      = 330u;   /* Version Number corresponds to 3.3 */
@@ -40,6 +37,10 @@ static       unsigned int      DGBLOCK_06__PtrDATA                            = 
 static       unsigned short    DGBLOCK_07__NumberOfCGBLOCKs                   = 0x0001u;
 static       unsigned short    DGBLOCK_08__NumberOfRecordIDs                  = 0x0000u; /* data records without record ID */
 static const unsigned int      DGBLOCK_09__Reserved                           = 0x00000000u;
+
+static size_t count = 0;
+
+FILE *mdf_open(const char *filename);
 
 static void set_Infos(void){
 #if 0
@@ -121,28 +122,19 @@ static void write__DGBLOCK(FILE *fp, size_t *count){
     *count += fwrite(&DGBLOCK_09__Reserved,                             sizeof(DGBLOCK_09__Reserved),                   1, fp);
 } /* write__DGBLOCK */
 
-int main(void){
-    FILE *fp;
-    size_t count = 0;
-    unsigned short content = 0xABCD;
+FILE *mdf_open(const char *filename)
+{
+   FILE *fp = NULL;
+   fp = fopen(filename, "wb");
+   if(NULL == fp)
+   {
+      return fp;
+   }
 
-    fp = fopen("test.mdf", "w");
-    if(fp == NULL){
-        perror("failed to open test.mdf");
-        return EXIT_FAILURE;
-    }
+   set_Infos();
+   write__IDBLOCK(fp, &count);
+   write__HDBLOCK(fp, &count);
+   write__DGBLOCK(fp, &count);
 
-    set_Infos();
-    write__IDBLOCK(fp, &count);
-    write__HDBLOCK(fp, &count);
-    write__DGBLOCK(fp, &count);
-
-    if(0 ==fclose(fp)){
-        return EXIT_SUCCESS;
-    }else{
-        perror("failed to close test.mdf");
-        return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
+   return fp;
 }
